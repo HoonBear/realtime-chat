@@ -1,5 +1,5 @@
 /* import custom modules */
-let serverFunc = require('./config/serverFunc');
+let serverFunc = require('./config/server');
 let socketHandler = require('./controller/handler/socketHandler');
 let scheduleHandler = require('./controller/handler/scheduleHandler');
 let groupHandler = require('./controller/handler/groupHandler');
