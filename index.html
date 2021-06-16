@@ -6,8 +6,6 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 </head>
 <body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
   <div class="container">
     <h3>Socket.io Chat Example</h3>
     <!-- <form class="form-inline"> -->
@@ -38,10 +36,13 @@
     </form>
     <ul id="chat"></ul>
   </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     $(function() {
       // 지정 namespace로 접속한다
-      var chat = io('/chat');
+      var chat = io('http://localhost:3000/schedule'),
+          news = io('/news');
 
       $("form").submit(function(e) {
         e.preventDefault();

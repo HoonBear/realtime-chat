@@ -1,34 +1,33 @@
+/* import custom modules */
 let serverFunc = require('./config/serverFunc');
+let socketHandler = require('./controller/handler/socketHandler');
+let scheduleHandler = require('./controller/handler/scheduleHandler');
+let groupHandler = require('./controller/handler/groupHandler');
+/* import node modules */
 let createError = require('http-errors');
 let logger = require('morgan');
 let app = require('express')();
 let server = require('http').createServer(app);
-let socketHandler = require('./controller/socket/socketHandler')
-let env = process.env.NODE_ENV || 'development'
-let pTimeout = env === 'production' ? 60000 : 10000
-let pInterval = env === 'production' ? 25000 : 10000
+/* setting socket.io */
+let env = process.env.NODE_ENV || 'development';
+let pTimeout = env === 'production' ? 60000 : 10000;
+let pInterval = env === 'production' ? 25000 : 10000;
 let io = require('socket.io')(server, {
   'pingTimeout': pTimeout,
   'pingInterval': pInterval,
   reconnetion: true
 });
 
-io.on('connection', async (socket) => {
-  await socketHandler(io, socket)
+const commonNamespace = io.on('connection', async (socket) => {
+  await socketHandler(io, socket, commonNamespace)
 })
 
-var chat = io.of('/chat').on('connection', function (socket) {
-  socket.on('chat message', function (data) {
-      console.log('message from client: ', data);
+const scheduleNamespace = io.of('/schedule').on('connection', async(socket) => {
+  await scheduleHandler(io, socket, scheduleNamespace);
+});
 
-      var name = socket.name = data.name;
-      var room = socket.room = data.room;
-
-      // room에 join한다
-      socket.join(room);
-      // room에 join되어 있는 클라이언트에게 메시지를 전송한다
-      chat.to(room).emit('chat message', data.msg);
-  });
+const groupNamespace = io.of('/group').on('connection', async(socket) => {
+  await groupHandler(io, socket, groupNamespace);
 });
 
 app.get('/', function (req, res) {
